@@ -1,12 +1,12 @@
 {
-  "name": "src",
+  "name": "tbd-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node --files ./src/index.ts",
-    "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' --files src/index.ts",
+    "start": "node ./dist/index.js",
     "build": "rm -rf dist && tsc --sourceMap -p ./",
+    "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' --files src/index.ts",
     "test": "NODE_ENV=test npx jest --verbose --runInBand"
   },
   "keywords": [],

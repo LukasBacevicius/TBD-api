@@ -1,6 +1,7 @@
 import * as fastify from "fastify";
 import * as fastifyBlipp from "fastify-blipp";
 import { Server, IncomingMessage, ServerResponse } from "http";
+import * as config from "config";
 import userRoutes from "./modules/routes/user";
 import db from "./db";
 
@@ -10,7 +11,7 @@ const server: fastify.FastifyInstance<
     ServerResponse
 > = fastify();
 
-server.register(db, { uri: "mongodb://localhost:27017/tbd" });
+server.register(db, config.get('db'));
 server.register(fastifyBlipp);
 server.register(userRoutes);
 
