@@ -2,7 +2,7 @@ import * as fastify from "fastify";
 import * as fastifyBlipp from "fastify-blipp";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as config from "config";
-import * as Routes from "./modules/routes";
+import * as Routes from "./routes";
 import db from "./db";
 
 const server: fastify.FastifyInstance<

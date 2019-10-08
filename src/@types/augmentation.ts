@@ -1,7 +1,7 @@
 //@ts-ignore
 import * as http from "http";
 
-import { Db } from "../../db";
+import { Db } from "../db";
 
 declare module "fastify" {
     export interface FastifyInstance<
