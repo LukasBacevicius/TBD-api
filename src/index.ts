@@ -2,7 +2,7 @@ import * as fastify from "fastify";
 import * as fastifyBlipp from "fastify-blipp";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as config from "config";
-import userRoutes from "./modules/routes/user";
+import * as Routes from "./modules/routes";
 import db from "./db";
 
 const server: fastify.FastifyInstance<
@@ -13,7 +13,8 @@ const server: fastify.FastifyInstance<
 
 server.register(db, config.get('db'));
 server.register(fastifyBlipp);
-server.register(userRoutes);
+
+Object.keys(Routes).map(route => server.register(Routes[route]));
 
 process.on("uncaughtException", error => {
     console.error(error);
