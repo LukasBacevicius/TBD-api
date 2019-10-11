@@ -2,7 +2,7 @@ import * as fastify from "fastify";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import userRoutes from ".";
 
-describe("/users", () => {
+describe("/user", () => {
   let server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse>;
 
   beforeAll(() => { });
@@ -17,7 +17,7 @@ describe("/users", () => {
   });
 
   it("POST returns 200", async done => {
-    const response = await server.inject({ method: "POST", url: "/users", payload: { name: 'test', email: 'test@test.com' } });
+    const response = await server.inject({ method: "POST", url: "/user", payload: { name: 'test', email: 'test@test.com' } });
     expect(response.statusCode).toEqual(200);
     done();
   });

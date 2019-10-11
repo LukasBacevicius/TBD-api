@@ -2,8 +2,8 @@
 export default class GenericController {
     model: any;
 
-    constructor(server: any) {
-        this.model = server;
+    constructor(model: any) {
+        this.model = model;
 
         this.findOne = this.findOne.bind(this);
         this.create = this.create.bind(this);
