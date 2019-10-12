@@ -27,6 +27,7 @@
     "fastify-sensible": "^2.1.1",
     "fastify-swagger": "^2.4.0",
     "http": "0.0.0",
+    "http-errors": "^1.7.3",
     "jest": "^24.9.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.3",
