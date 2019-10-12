@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model } from "mongoose";
+import { Document, Schema, Model, model, models } from "mongoose";
 
 export interface UserDocument extends Document {
     name: {
@@ -8,9 +8,7 @@ export interface UserDocument extends Document {
     email: string,
     phoneNumber: string,
     created_at: string,
-    hash: string,
-    salt: string,
-    validatePassword: (password: string) => boolean,
+    password: string,
 }
 
 export interface UserModel extends UserDocument { }
@@ -37,12 +35,19 @@ export const UserSchema: Schema = new Schema(
             type: String,
             required: [true, "Phone number is required"]
         },
-        hash: String,
-        salt: String,
+        password: {
+            type: String,
+            required: [true, "Password is required"]
+        },
         created_at: Date
     },
     { collection: "users" }
 );
+
+UserSchema.path('email').validate(async (value) => {
+    const emailCount = await models.User.countDocuments({ email: value });
+    return !emailCount;
+}, 'Email already exists');
 
 export const User: Model<UserModel> = model<UserModel>(
     "User",

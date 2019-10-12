@@ -1,0 +1,1 @@
+export default (object, callback) => Object.keys(object).map(item => callback(object[item]))  

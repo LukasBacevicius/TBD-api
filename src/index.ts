@@ -1,8 +1,15 @@
 import * as fastify from "fastify";
 import * as fastifyBlipp from "fastify-blipp";
-import { Server, IncomingMessage, ServerResponse } from "http";
+import * as sensible from 'fastify-sensible';
+import * as basicAuth from 'fastify-basic-auth';
 import * as config from "config";
+import * as bcrypt from 'bcrypt';
+import { Server, IncomingMessage, ServerResponse } from "http";
 import * as Routes from "./routes";
+import * as Hooks from './hooks';
+import validate from './helpers/validateAuth';
+import objectImports from './helpers/objectImports';
+
 import db from "./db";
 
 const server: fastify.FastifyInstance<
@@ -11,10 +18,14 @@ const server: fastify.FastifyInstance<
     ServerResponse
 > = fastify();
 
+server.decorate('bcrypt', bcrypt);
 server.register(db, config.get('db'));
+server.register(sensible);
 server.register(fastifyBlipp);
+server.register(basicAuth, { validate });
 
-Object.keys(Routes).map(route => server.register(Routes[route]));
+objectImports(Routes, server.register);
+objectImports(Hooks, server.register);
 
 process.on("uncaughtException", error => {
     console.error(error);
@@ -25,7 +36,7 @@ process.on("unhandledRejection", error => {
 
 (async () => {
     try {
-        await server.listen(3000, "0.0.0.0");
+        await server.listen(5000, "0.0.0.0");
         server.blipp();
     } catch (err) {
         server.log.error(err);

@@ -1,9 +1,11 @@
 
 export default class GenericController {
+    fastify: any;
     model: any;
 
-    constructor(model: any) {
+    constructor(fastify, model: any) {
         this.model = model;
+        this.fastify = fastify;
 
         this.findOne = this.findOne.bind(this);
         this.create = this.create.bind(this);

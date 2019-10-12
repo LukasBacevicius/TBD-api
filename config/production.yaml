@@ -1,3 +1,2 @@
 db:
     uri: "mongodb://mongodb:27017/tbd"
-jwtSecret: "12345676567890"
