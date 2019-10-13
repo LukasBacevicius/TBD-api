@@ -2,8 +2,8 @@ import * as fastify from "fastify";
 import * as fastifyBlipp from "fastify-blipp";
 import * as sensible from 'fastify-sensible';
 import * as basicAuth from 'fastify-basic-auth';
+import * as jwt from 'fastify-jwt' 
 import * as config from "config";
-import * as bcrypt from 'bcrypt';
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as Routes from "./routes";
 import * as Hooks from './hooks';
@@ -18,12 +18,13 @@ const server: fastify.FastifyInstance<
     ServerResponse
 > = fastify();
 
-server.decorate('bcrypt', bcrypt);
 server.register(db, config.get('db'));
 server.register(sensible);
+server.register(jwt, {
+    secret: config.get('jwt')
+  })
 server.register(fastifyBlipp);
 server.register(basicAuth, { validate });
-
 objectImports(Routes, server.register);
 objectImports(Hooks, server.register);
 
