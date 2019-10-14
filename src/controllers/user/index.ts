@@ -8,6 +8,21 @@ export default class UserController extends GenericController {
         super(fastify, model);
 
         this.login = this.login.bind(this);
+        this.create = this.create.bind(this);
+    }
+
+    async create(request, reply) {
+        /* 
+            TODO: generate JWT token and send email with verification link
+        */
+
+        super.create(request, reply);
+    }
+
+    async verify(request, reply) {
+        /* 
+            TODO: 
+        */
     }
 
     async login(request, reply) {

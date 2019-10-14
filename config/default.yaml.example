@@ -1,0 +1,3 @@
+db:
+    uri: "mongodb://enpoint:port/db"
+jwt: YOURJWTSECRET

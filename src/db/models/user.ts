@@ -46,12 +46,11 @@ export const UserSchema: Schema = new Schema(
             default: Date.now
         },
         /* 
-            TODO: Protect the active field 
+            TODO: Protect the active field so that user can not edit it
         */
         active: {
             type: Boolean,
-            default: true,
-            set: () => true
+            default: false
         }
     },
     { collection: "users" }
