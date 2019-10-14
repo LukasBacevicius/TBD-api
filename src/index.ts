@@ -7,6 +7,7 @@ import * as config from "config";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as Routes from "./routes";
 import * as Hooks from './hooks';
+import sendgrid from './services/mail';
 import verifyJWT from './decorators/verifyJWT';
 import objectImports from './helpers/objectImports';
 
@@ -26,6 +27,8 @@ server.register(jwt, {
 server.register(verifyJWT);
 server.register(fastifyBlipp);
 server.register(auth);
+server.register(sendgrid);
+
 objectImports(Routes, server.register);
 objectImports(Hooks, server.register);
 

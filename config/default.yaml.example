@@ -1,3 +1,5 @@
 db:
     uri: "mongodb://enpoint:port/db"
-jwt: YOURJWTSECRET
+jwt: YOUR_JWT_SECRET
+sendgrid: SENDGRID_API_KEY
+uiUrl: http://localhost:5000

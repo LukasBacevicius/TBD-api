@@ -1,4 +1,7 @@
 import GenericController from "../generic";
+import * as moment from 'moment';
+import * as config from 'config';
+import { decode } from "punycode";
 
 export default class UserController extends GenericController {
     fastify: any;
@@ -9,20 +12,84 @@ export default class UserController extends GenericController {
 
         this.login = this.login.bind(this);
         this.create = this.create.bind(this);
+        this.verify = this.verify.bind(this);
+        this.resendVerification = this.resendVerification.bind(this);
+    }
+
+    async sendVerificationMail(_id, to) {
+        const token = this.fastify.jwt.sign({
+            _id,
+            exp: moment().utc().add({ days: 1 }).unix()
+        })
+
+        return await this.fastify.sendgrid.send({
+            to,
+            from: 'test@tbd.com',
+            subject: 'Verify your email',
+            html: `<a href="${config.get('uiUrl')}/verify?token=${token}">Verify your email</a>`
+        });
     }
 
     async create(request, reply) {
-        /* 
-            TODO: generate JWT token and send email with verification link
-        */
+        try {
+            const result = await this.model.create(request.body);
 
-        super.create(request, reply);
+            await this.sendVerificationMail(result._id, result.email);
+
+            return reply.code(201).send(result);
+        } catch (error) {
+            request.log.error(error);
+            return reply.code(400).send(error);
+        }
     }
 
     async verify(request, reply) {
-        /* 
-            TODO: 
-        */
+        try {
+            if (!request.query.token) {
+                new Error('Missing token');
+            }
+
+            this.fastify.jwt.verify(request.query.token, async (error, decoded) => {
+                try {
+                    if (error) {
+                        throw new Error(error);
+                    }
+
+                    const user = await this.model.findByIdAndUpdate(decoded._id, { active: true }, { new: true });
+
+                    return reply.code(200).send(user);
+                } catch (error) {
+                    return reply.code(400).send(error);
+                }
+            });
+
+        } catch (error) {
+            request.log.error(error);
+            return reply.code(400).send(error);
+        }
+    }
+
+    async resendVerification(request, reply) {
+        try {
+            if (!request.body.token) {
+                new Error('Missing token');
+            }
+
+            const decoded = await this.fastify.jwt.decode(request.body.token);
+
+            const { email, active } = await this.model.findById(decoded._id);
+
+            if (active) {
+                throw new Error('Email is already verified');
+            }
+
+            await this.sendVerificationMail(decoded._id, email);
+
+            return reply.code(200).send({ "message": "OK" });
+        } catch (error) {
+            request.log.error(error);
+            return reply.code(400).send(error);
+        }
     }
 
     async login(request, reply) {
@@ -39,7 +106,8 @@ export default class UserController extends GenericController {
                 return reply.code(201).send({
                     token: this.fastify.jwt.sign({
                         _id: user._id,
-                        password: request.body.password
+                        password: request.body.password,
+                        exp: moment().utc().add({ days: 7 }).unix()
                         /* 
                             TODO: Add expiration date
                         */
