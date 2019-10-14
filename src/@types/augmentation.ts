@@ -11,6 +11,6 @@ declare module "fastify" {
         > {
         blipp(): void;
         db: Db;
-        basicAuth;
+        verifyJWT;
     }
 }

@@ -21,14 +21,14 @@ export default class UserController extends GenericController {
             const valid = await user.comparePassword(request.body.password);
 
             if (valid) {
-                /* 
-                    this.fastify.jwt.sing({ 
-                            email: user.email,
-                            password: request.body.password
-                        })
-                */
                 return reply.code(201).send({
-                    token: 'Basic ' + Buffer.from(`${user.email}:${request.body.password}`).toString('base64')
+                    token: this.fastify.jwt.sign({
+                        _id: user._id,
+                        password: request.body.password
+                        /* 
+                            TODO: Add expiration date
+                        */
+                    })
                 })
             }
 
