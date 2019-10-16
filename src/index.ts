@@ -7,6 +7,8 @@ import * as config from "config";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as Routes from "./routes";
 import * as Hooks from './hooks';
+import * as session from 'fastify-session';
+import * as cookie from 'fastify-cookie';
 import sendgrid from './services/mail';
 import verifyJWT from './decorators/verifyJWT';
 import objectImports from './helpers/objectImports';
@@ -23,6 +25,15 @@ server.register(db, config.get('db'));
 server.register(sensible);
 server.register(jwt, {
     secret: config.get('jwt')
+});
+server.register(cookie);
+server.register(session, {
+    cookieName: 'sessionId',
+    secret: 'a secret with minimum length of 32 characters',
+    cookie: {
+        secure: false,
+        maxAge: 7200000
+    },
 });
 server.register(verifyJWT);
 server.register(fastifyBlipp);

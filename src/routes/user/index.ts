@@ -5,6 +5,7 @@ export default fp(async (server, opts, next) => {
     const User = new UserController(server, server.db.models.User);
 
     server.post('/login', User.login);
+    server.get('/logout', User.logout);
     server.get('/verify', User.verify);
     server.post('/resendVerification', User.resendVerification);
 

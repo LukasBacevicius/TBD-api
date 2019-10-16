@@ -14,6 +14,7 @@ export default class UserController extends GenericController {
         this.create = this.create.bind(this);
         this.verify = this.verify.bind(this);
         this.resendVerification = this.resendVerification.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     async sendVerificationMail(_id, to) {
@@ -35,6 +36,9 @@ export default class UserController extends GenericController {
             const result = await this.model.create(request.body);
 
             await this.sendVerificationMail(result._id, result.email);
+
+            /* Make sure that `active` property has not been changed */
+            request.body.active = false;
 
             return reply.code(201).send(result);
         } catch (error) {
@@ -92,6 +96,21 @@ export default class UserController extends GenericController {
         }
     }
 
+    async logout(request, reply) {
+        try {
+            request.destroySession((error) => {
+                if (error) { 
+                    return reply.code(500).send(error);
+                }
+            });
+            
+            return reply.code(200).send({ message: "Logged out"});
+        } catch (error) {
+            request.log.error(error);
+            return reply.code(400).send(error);
+        }
+    }
+
     async login(request, reply) {
         try {
             const user = await this.model.findOne({ email: request.body.email });
@@ -103,6 +122,9 @@ export default class UserController extends GenericController {
             const valid = await user.comparePassword(request.body.password);
 
             if (valid) {
+                request.session.authenticated = valid;
+                request.session.user = user._id;
+
                 return reply.code(201).send({
                     token: this.fastify.jwt.sign({
                         _id: user._id,
