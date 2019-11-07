@@ -99,12 +99,12 @@ export default class UserController extends GenericController {
     async logout(request, reply) {
         try {
             request.destroySession((error) => {
-                if (error) { 
+                if (error) {
                     return reply.code(500).send(error);
                 }
             });
             
-            return reply.code(200).send({ message: "Logged out"});
+            return reply.code(200).send({ message: "Logged out" });
         } catch (error) {
             request.log.error(error);
             return reply.code(400).send(error);
@@ -123,7 +123,10 @@ export default class UserController extends GenericController {
 
             if (valid) {
                 request.session.authenticated = valid;
-                request.session.user = user._id;
+                request.session.credentials = {
+                    _id: user._id,
+                    roles: user.roles
+                };
 
                 return reply.code(201).send({
                     token: this.fastify.jwt.sign({

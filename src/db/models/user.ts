@@ -10,6 +10,7 @@ export interface UserDocument extends Document {
     created_at: string,
     password: string,
     active: boolean;
+    roles: Array<string>;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -45,6 +46,10 @@ export const UserSchema: Schema = new Schema(
             type: Date,
             default: Date.now
         },
+        roles: [{
+            type: String,
+            enum: ["user", "superuser", "admin"]
+        }],
         /* 
             TODO: Protect the active field so that user can not edit it
         */
@@ -62,6 +67,8 @@ UserSchema.path('email').validate(async (value) => {
 }, 'Email already exists');
 
 UserSchema.pre('save', function (next) {
+    //@ts-ignore
+    this.roles.push('user');
     //@ts-ignore
     bcrypt.hash(this.password, 10, (err, hash) => {
         //@ts-ignore
